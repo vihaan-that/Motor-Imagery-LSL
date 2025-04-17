@@ -1,11 +1,10 @@
-# Motor Imagery Classification with LSL & Emotiv
+# BCI-MOTORIMAGERY: Motor Imagery Classification with LSL & Emotiv
 
 ## Overview
 
-This project provides a framework for classifying motor imagery tasks (left fist vs. both feet) in real-time using EEG data streamed from an Emotiv headset via Lab Streaming Layer (LSL). The system consists of two main components:
+This project provides a framework for classifying motor imagery tasks (left fist vs. both feet) in real-time using EEG data streamed from an Emotiv headset via Lab Streaming Layer (LSL). 
 
-1. **Model Training Pipeline** - Processes offline data to train a classifier
-2. **Real-time Classifier** - Uses the trained model to classify streaming EEG data
+The system builds on the `emotiv-lsl` streaming server and adds a classification pipeline for real-time motor imagery detection.
 
 ## System Architecture
 
@@ -50,7 +49,7 @@ This script performs real-time classification of EEG data streamed from an Emoti
 1. Train a model using train_model.py
 2. Run: `python lsl_classifier.py`
 
-## Requirements
+## Requirements for Classification System
 
 - Python 3.7+
 - MNE-Python
@@ -62,39 +61,39 @@ This script performs real-time classification of EEG data streamed from an Emoti
 - scipy
 - joblib
 
-## Installation
+## Installation of Classification Components
 
 ```bash
-# Clone the repository (if applicable)
-git clone <repository-url>
-cd Motor_Imagery
-
-# Install dependencies
-pip install mne pylsl scikit-learn pyriemann matplotlib numpy scipy joblib
+# After setting up the emotiv-lsl base, install additional dependencies
+pip install mne scikit-learn pyriemann matplotlib numpy scipy joblib
 ```
 
-## Usage Workflow
+## Classification System Workflow
 
 ### 1. Data Collection and Preprocessing
 
 If you don't have preprocessed data yet:
-1. Collect EEG data using the Emotiv headset while performing motor imagery tasks
-2. Preprocess and extract features using the functions in datamotor14.py
+1. Start the emotiv-lsl server as described above
+2. Collect EEG data using the Emotiv headset while performing motor imagery tasks
+3. Preprocess and extract features using the functions in datamotor14.py
 
 ### 2. Train the Model
 
 1. Update the feature file path in train_model.py
 2. Run the training script:
-   ```
+   ```bash
    python train_model.py
    ```
 3. The trained model will be saved as "motor_imagery_model.joblib"
 
 ### 3. Real-time Classification
 
-1. Connect your Emotiv headset and ensure it's streaming data via LSL
-2. Run the real-time classifier:
+1. Start the emotiv-lsl server in one terminal:
+   ```bash
+   python -m pipenv run python main.py
    ```
+2. In another terminal, run the real-time classifier:
+   ```bash
    python lsl_classifier.py
    ```
 3. View the real-time classification results and probability plot
@@ -163,41 +162,50 @@ The system uses a **Random Forest Classifier** due to its:
 - MNE-Python: https://mne.tools/
 - pyRiemann: https://pyriemann.readthedocs.io/
 - Emotiv Documentation: https://emotiv.gitbook.io/
-# BCI-MOTORIMAGERY
-# emotiv-lsl
+## Project Components
 
-LSL server for Emotiv EPOC X  
-Original code taken from [CyKit](https://github.com/CymatiCorp/CyKit)
+The system consists of two main components:
 
-### Dependencies
+1. **emotiv-lsl** - Base LSL server for Emotiv EPOC X headset
+2. **Classification Pipeline** - Processing and machine learning components for motor imagery detection
 
-```
+## Setting Up emotiv-lsl Base Server
+
+The base component is an LSL server for Emotiv EPOC X (original code derived from [CyKit](https://github.com/CymatiCorp/CyKit)).
+
+### Dependencies for emotiv-lsl
+
+```bash
 pip install pipenv
 python -m pipenv install
 ```
 
-### Usage
-Disable the motion data in Emotiv app settings  
-Connect dongle, turn on the headset, wait for the light from two indicators
-```
-# frist terminal
-python -m pipenv run python main.py
-```
+### Starting the LSL Stream
 
-Then you can use any lsl client, for example [bskl](https://github.com/bsl-tools/bsl)
+1. Disable the motion data in Emotiv app settings  
+2. Connect dongle, turn on the headset, wait for the light from two indicators
+3. Start the LSL server:
+   ```bash
+   # In first terminal
+   python -m pipenv run python main.py
+   ```
 
-```
-bsl_stream_viewer
-```
+### Testing the LSL Stream
 
-![Alt text](images/bsl_stream_viewer.png)
+You can verify the stream is working with:
 
-Or use examples/read_data.py to get raw data
+1. **bskl viewer** ([bskl](https://github.com/bsl-tools/bsl)):
+   ```bash
+   bsl_stream_viewer
+   ```
 
-```
-# second terminal
-python -m pipenv run python examples/read_data.py
-```
+   ![BSL Stream Viewer](images/bsl_stream_viewer.png)
+
+2. **Read raw data** with the included example:
+   ```bash
+   # In second terminal
+   python -m pipenv run python examples/read_data.py
+   ```
 
 ### Config
 
